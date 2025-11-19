@@ -561,6 +561,8 @@ from open_webui.utils.chat import (
 )
 from open_webui.utils.embeddings import generate_embeddings
 from open_webui.utils.logger import start_logger
+from open_webui.pii_protection_middleware import PIIProtectionMiddleware
+from open_webui.utils.mcp.pubmed_setup import setup_pubmed_mcp
 from open_webui.utils.middleware import (
     build_chat_response_context,
     process_chat_payload,
@@ -823,6 +825,15 @@ app.state.OPENAI_MODELS = {}
 
 app.state.config.TOOL_SERVER_CONNECTIONS = TOOL_SERVER_CONNECTIONS
 app.state.TOOL_SERVERS = []
+
+
+# Auto-register PubMed MCP server if missing
+@app.on_event("startup")
+async def _auto_register_pubmed_mcp():
+    try:
+        await setup_pubmed_mcp(app.state)
+    except Exception as e:
+        log.debug(f"PubMed MCP auto-setup skipped: {e}")
 
 ########################################
 #
@@ -1393,6 +1404,7 @@ if ENABLE_COMPRESSION_MIDDLEWARE:
 # `open_webui.utils.asgi_middleware` for the rationale.
 app.add_middleware(RedirectMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(PIIProtectionMiddleware)
 app.add_middleware(CommitSessionMiddleware)
 app.add_middleware(AuthTokenMiddleware, fastapi_app=app)
 app.add_middleware(WebsocketUpgradeGuardMiddleware)
