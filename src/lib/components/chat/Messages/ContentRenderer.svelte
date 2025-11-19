@@ -224,7 +224,12 @@
 	});
 </script>
 
-<div bind:this={contentContainerElement}>
+<div
+	bind:this={contentContainerElement}
+	class={typeof content === 'string' && /Referências:/.test(content)
+		? 'rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm p-4 my-2'
+		: ''}
+>
 	{#if $settings?.renderMarkdownInAssistantMessages ?? true}
 		<Markdown
 			{id}

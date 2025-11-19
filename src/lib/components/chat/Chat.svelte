@@ -81,7 +81,10 @@
 		updateChatById,
 		updateChatFolderIdById
 	} from '$lib/apis/chats';
-	import { generateOpenAIChatCompletion } from '$lib/apis/openai';
+	import {
+		generateOpenAIChatCompletion,
+		generateOpenAIChatCompletionWithHeaders
+	} from '$lib/apis/openai';
 	import { processWeb, processWebSearch, processYoutubeVideo } from '$lib/apis/retrieval';
 	import { getAndUpdateUserLocation, getUserSettings } from '$lib/apis/users';
 	import {
@@ -419,6 +422,19 @@
 				) {
 					codeInterpreterEnabled = model.info.meta.defaultFeatureIds.includes('code_interpreter');
 				}
+
+				// Auto-enable PubMed MCP by default if available and no tools selected
+				try {
+					if ((selectedToolIds?.length ?? 0) === 0 && ($toolServers?.length ?? 0) > 0) {
+						const idx = ($toolServers || []).findIndex((s) =>
+							(s?.info?.id ?? '').toLowerCase() === 'pubmed-mcp' ||
+							(s?.info?.name ?? '').toLowerCase().includes('pubmed')
+						);
+						if (idx >= 0) {
+							selectedToolIds = [...selectedToolIds, `direct_server:${idx}`];
+						}
+					}
+				} catch {}
 			}
 
 			// Set Default Terminal — only if the referenced terminal actually exists
@@ -2431,7 +2447,7 @@
 		// Only send terminal_id if the model has terminal capability enabled
 		const terminalEnabled = model.info?.meta?.capabilities?.terminal ?? true;
 
-		const res = await generateOpenAIChatCompletion(
+		const resObj = await generateOpenAIChatCompletionWithHeaders(
 			localStorage.token,
 			{
 				stream: stream,
@@ -2523,7 +2539,27 @@
 			return null;
 		});
 
-		if (res) {
+		if (resObj) {
+			// Surface PII banner if middleware signaled
+			try {
+				const piiDetected = resObj.headers?.get('x-pii-detected') === 'true';
+				if (piiDetected) {
+					const types = (resObj.headers.get('x-pii-types') || '').split(',').filter(Boolean);
+					banners.update((list) => [
+						{
+							id: `pii-${Date.now()}`,
+							type: 'warning',
+							title: 'Proteção de Dados de Pacientes',
+							content: `⚠️ Detectamos e sanitizamos dados sensíveis${types.length ? ` (${types.join(', ')})` : ''}. Não compartilhe informações de pacientes. Remova PII e descreva apenas o caso clínico de forma anônima.`,
+							dismissible: true,
+							timestamp: Math.floor(Date.now() / 1000)
+						},
+						...list
+					]);
+				}
+			} catch {}
+
+			const res = resObj.data;
 			if (res.error) {
 				await handleOpenAIError(res.error, responseMessage);
 			} else {
@@ -2760,6 +2796,25 @@
 				message.parentId ? history.messages[message.parentId].content : '',
 				responses
 			);
+
+			// Check PII headers from backend middleware and surface a warning banner
+			try {
+				const piiDetected = res?.headers?.get('x-pii-detected') === 'true';
+				if (piiDetected) {
+					const types = (res.headers.get('x-pii-types') || '').split(',').filter(Boolean);
+					banners.update((list) => [
+						{
+							id: `pii-${Date.now()}`,
+							type: 'warning',
+							title: 'Proteção de Dados de Pacientes',
+							content: `⚠️ Detectamos e sanitizamos dados sensíveis${types.length ? ` (${types.join(', ')})` : ''}. Não compartilhe informações de pacientes. Remova PII e descreva apenas o caso clínico de forma anônima.`,
+							dismissible: true,
+							timestamp: Math.floor(Date.now() / 1000)
+						},
+						...list
+					]);
+				}
+			} catch {}
 
 			if (res && res.ok && res.body && generating) {
 				generationController = controller as AbortController;

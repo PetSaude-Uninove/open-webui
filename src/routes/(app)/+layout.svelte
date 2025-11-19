@@ -11,7 +11,7 @@
 
 	import { getModels, getToolServersData, getVersionUpdates } from '$lib/apis';
 	import { getTools } from '$lib/apis/tools';
-	import { getBanners } from '$lib/apis/configs';
+	import { getBanners, getToolServerConnections } from '$lib/apis/configs';
 	import { getTerminalServers } from '$lib/apis/terminal';
 	import { getUserSettings } from '$lib/apis/users';
 
@@ -121,6 +121,18 @@
 
 	const setToolServers = async () => {
 		let toolServersData = await getToolServersData($settings?.toolServers ?? []);
+		// Fallback: merge global connections when user has none
+		if ((toolServersData?.length ?? 0) === 0) {
+			try {
+				const globalConns = await getToolServerConnections(localStorage.token);
+				const servers = globalConns?.TOOL_SERVER_CONNECTIONS ?? [];
+				if (servers.length > 0) {
+					toolServersData = await getToolServersData(servers);
+				}
+			} catch (e) {
+				console.debug('No global tool servers available');
+			}
+		}
 		toolServersData = toolServersData.filter((data) => {
 			if (!data || data.error) {
 				toast.error(
