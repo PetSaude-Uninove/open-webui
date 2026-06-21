@@ -331,8 +331,8 @@ const setToolServers = async () => {
 	</div>
 {/if}
 
-{#if $user}
-	<div class="app relative">
+<div class="app relative">
+	{#if $user}
 		<div
 			class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row justify-end"
 		>
@@ -409,8 +409,33 @@ const setToolServers = async () => {
 				{/if}
 			{/if}
 		</div>
-	</div>
-{/if}
+	{/if}
+	<footer
+		class="w-full text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 py-3"
+	>
+		<div class="flex flex-col items-center gap-2">
+			<div class="flex flex-wrap items-center justify-center gap-4">
+				<a href="https://www.uninove.br" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2">
+					<img src="https://www.uninove.br/logo-uninove.svg" alt="Uninove" class="h-6 object-contain" />
+				</a>
+				<a href="https://askklog.com.br" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2">
+					<img src="https://askklog.com.br/wp-content/themes/asklog-site/source/img/logo-asklog.svg" alt="AskKlog" class="h-6 object-contain" />
+				</a>
+				<a href="https://www.gov.br/saude/pt-br/composicao/sgtes/pet-saude" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2">
+					<img src="https://www.gov.br/saude/pt-br/composicao/sgtes/pet-saude/chamamento-publico-no-01-2025-2013-secretaria-de-informacao-e-saude-digital-seidigi/@@images/image" alt="PET Saúde" class="h-6 object-contain rounded" />
+				</a>
+			</div>
+			<a
+				href="https://askklog.com.br"
+				class="hover:underline"
+				target="_blank"
+				rel="noreferrer"
+			>
+				Supported by AskKlog.
+			</a>
+		</div>
+	</footer>
+</div>
 
 <style>
 	.loading {

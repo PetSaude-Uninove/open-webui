@@ -51,7 +51,13 @@ def ensure_pubmed_mcp_registered(app_state) -> bool:
             logger.warning("[Medical] app_state doesn't have config attribute")
             return False
 
-        current_connections = app_state.config.get("TOOL_SERVER_CONNECTIONS", [])
+        # app_state.config may be a settings object without .get
+        config_obj = app_state.config
+        try:
+            current_connections = config_obj.get("TOOL_SERVER_CONNECTIONS", [])
+        except Exception:
+            current_connections = getattr(config_obj, "TOOL_SERVER_CONNECTIONS", [])
+
         if not isinstance(current_connections, list):
             current_connections = []
 
