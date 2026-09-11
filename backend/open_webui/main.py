@@ -51,7 +51,6 @@ from starsessions import (
     SessionMiddleware as StarSessionsMiddleware,
 )
 from starsessions.stores.redis import RedisStore
-
 from open_webui.config import (
     ADMIN_EMAIL,
     API_KEYS_ALLOWED_ENDPOINTS,
@@ -825,8 +824,6 @@ app.state.OPENAI_MODELS = {}
 
 app.state.config.TOOL_SERVER_CONNECTIONS = TOOL_SERVER_CONNECTIONS
 app.state.TOOL_SERVERS = []
-
-
 # Auto-register PubMed MCP server if missing
 @app.on_event("startup")
 async def _auto_register_pubmed_mcp():
@@ -843,7 +840,6 @@ async def _auto_register_pubmed_mcp():
 
 app.state.config.TERMINAL_SERVER_CONNECTIONS = TERMINAL_SERVER_CONNECTIONS
 app.state.TERMINAL_SERVERS = []
-
 ########################################
 #
 # DIRECT CONNECTIONS
