@@ -56,3 +56,15 @@ def test_nao_duplica_por_id_nem_por_url():
 def test_ensure_retorna_true_quando_ja_existe():
     st = FakeState([get_pubmed_mcp_config()])
     assert medical_integration.ensure_pubmed_mcp_registered(st) is True
+
+
+def test_registro_do_pubmed_acontece_no_lifespan_e_nao_em_on_event():
+    """Com `lifespan` definido, o Starlette ignora `@app.on_event("startup")`;
+    o registro precisa estar dentro do lifespan, antes do `yield`."""
+    import pathlib
+    fonte = pathlib.Path(__file__).resolve().parents[1] / "main.py"
+    codigo = fonte.read_text(encoding="utf-8")
+    assert "\n@app.on_event(" not in codigo  # decorador no início de linha; comentários podem citá-lo
+    inicio = codigo.index("async def lifespan(app: FastAPI):")
+    fim = codigo.index("\n    yield\n", inicio)
+    assert "await setup_pubmed_mcp(app.state)" in codigo[inicio:fim]

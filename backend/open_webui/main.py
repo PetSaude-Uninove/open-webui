@@ -621,6 +621,13 @@ async def lifespan(app: FastAPI):
             None,
         )
 
+    # Registro automático do PubMed MCP. Precisa ficar aqui: com `lifespan` definido,
+    # o Starlette ignora handlers de `@app.on_event("startup")`, e o registro nunca rodava.
+    try:
+        await setup_pubmed_mcp(app.state)
+    except Exception as e:
+        log.warning(f"Registro automático do PubMed MCP falhou: {e}")
+
     yield
 
     if hasattr(app.state, "redis_task_command_listener"):
@@ -702,14 +709,6 @@ app.state.OPENAI_MODELS = {}
 
 app.state.config.TOOL_SERVER_CONNECTIONS = TOOL_SERVER_CONNECTIONS
 app.state.TOOL_SERVERS = []
-
-# Auto-register PubMed MCP server if missing
-@app.on_event("startup")
-async def _auto_register_pubmed_mcp():
-    try:
-        await setup_pubmed_mcp(app.state)
-    except Exception as e:
-        log.debug(f"PubMed MCP auto-setup skipped: {e}")
 
 ########################################
 #
