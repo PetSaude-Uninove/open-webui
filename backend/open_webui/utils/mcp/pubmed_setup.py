@@ -1,56 +1,76 @@
 """
 Setup script to register PubMed MCP server with Open WebUI
+
+Fonte única de verdade para a configuração e o registro do PubMed MCP.
+`app.state.config` é uma instância de `open_webui.config.AppConfig`, que
+persiste apenas via atribuição de atributo (`__setattr__`/`__getattr__`);
+ela não tem `.get` nem suporta atribuição por item (`obj["chave"] = valor`).
 """
 import logging
-from typing import Optional
+import os
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger("open_webui.pubmed_mcp")
+log.setLevel(logging.INFO)
+
+PUBMED_MCP_ID = "pubmed-mcp"
+PUBMED_MCP_URL = os.getenv("PUBMED_MCP_URL", "http://pubmed-mcp:8000/mcp")
+
 
 def get_pubmed_mcp_config() -> dict:
     """Get the PubMed MCP server configuration"""
     return {
-        "url": "http://pubmed-mcp:8000/mcp",
-        "path": "/mcp",
         "type": "mcp",
+        "url": PUBMED_MCP_URL,
+        "path": "/mcp",
+        "spec_type": "url",
+        "spec": "",
         "auth_type": "none",
-        "key": None,
-        "config": {},
+        "key": "",
+        "config": {
+            "enable": True,
+            "access_control": None,
+        },
         "info": {
-            "id": "pubmed-mcp",
+            "id": PUBMED_MCP_ID,
             "name": "PubMed MCP Server",
-            "description": "Medical literature search and comprehensive analysis using PubMed",
-            "version": "1.0.0"
-        }
+            "description": "Busca e análise de literatura médica no PubMed",
+        },
     }
 
-async def setup_pubmed_mcp(app_state):
+
+def registrar_pubmed_mcp(app_state) -> bool:
     """
-    Automatically setup PubMed MCP if not already configured
+    Registra o PubMed MCP em app_state.config.TOOL_SERVER_CONNECTIONS.
+
+    app_state.config só persiste por atribuição de atributo, por isso a
+    lista é lida, alterada em memória e reatribuída ao atributo (nunca via
+    `.get`/item assignment, que não existem em AppConfig).
+
+    Retorna True se registrou agora, False se já existia ou se algo falhou.
     """
     try:
-        # Get current tool server connections
-        current_connections = app_state.config.get("TOOL_SERVER_CONNECTIONS", [])
-        
-        # Check if PubMed MCP is already configured
-        pubmed_exists = any(
-            conn.get("info", {}).get("id") == "pubmed-mcp" 
-            for conn in current_connections
+        conns = list(app_state.config.TOOL_SERVER_CONNECTIONS or [])
+
+        ja_existe = any(
+            (conn.get("info", {}) or {}).get("id") == PUBMED_MCP_ID
+            or conn.get("url") == PUBMED_MCP_URL
+            for conn in conns
         )
-        
-        if not pubmed_exists:
-            logger.info("Setting up PubMed MCP server...")
-            pubmed_config = get_pubmed_mcp_config()
-            
-            # Add PubMed MCP to connections
-            current_connections.append(pubmed_config)
-            app_state.config["TOOL_SERVER_CONNECTIONS"] = current_connections
-            
-            logger.info("PubMed MCP server successfully registered")
-            return True
-        else:
-            logger.info("PubMed MCP server already configured")
+
+        if ja_existe:
+            log.info("PubMed MCP já está registrado em TOOL_SERVER_CONNECTIONS")
             return False
-            
-    except Exception as e:
-        logger.error(f"Failed to setup PubMed MCP: {e}")
+
+        conns.append(get_pubmed_mcp_config())
+        app_state.config.TOOL_SERVER_CONNECTIONS = conns
+
+        log.info("PubMed MCP registrado com sucesso em TOOL_SERVER_CONNECTIONS")
+        return True
+    except Exception:
+        log.exception("Falha ao registrar o PubMed MCP")
         return False
+
+
+async def setup_pubmed_mcp(app_state) -> bool:
+    """Wrapper assíncrono chamado no lifespan de main.py."""
+    return registrar_pubmed_mcp(app_state)
