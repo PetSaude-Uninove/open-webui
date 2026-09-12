@@ -22,7 +22,7 @@ def get_pubmed_mcp_config() -> dict:
     """Get the PubMed MCP server configuration"""
     return {
         "url": "http://pubmed-mcp:8000/mcp",
-        "path": "/sse",
+        "path": "/mcp",
         "type": "mcp",
         "auth_type": "none",
         "key": None,
