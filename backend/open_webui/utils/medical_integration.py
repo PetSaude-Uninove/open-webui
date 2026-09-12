@@ -11,29 +11,16 @@ from open_webui.utils.medical_prompts import (
     detect_language,
     is_medical_query
 )
+from open_webui.utils.mcp.pubmed_setup import (
+    get_pubmed_mcp_config,
+    registrar_pubmed_mcp,
+    PUBMED_MCP_ID,
+)
 
 logger = logging.getLogger(__name__)
 
 # PubMed MCP Configuration
-PUBMED_MCP_ID = "pubmed-mcp"
 PUBMED_MCP_TOOL_ID = f"server:mcp:{PUBMED_MCP_ID}"
-
-def get_pubmed_mcp_config() -> dict:
-    """Get the PubMed MCP server configuration"""
-    return {
-        "url": "http://pubmed-mcp:8000/mcp",
-        "path": "/mcp",
-        "type": "mcp",
-        "auth_type": "none",
-        "key": None,
-        "config": {},
-        "info": {
-            "id": PUBMED_MCP_ID,
-            "name": "PubMed MCP Server",
-            "description": "Medical literature search and comprehensive analysis using PubMed",
-            "version": "1.0.0"
-        }
-    }
 
 def ensure_pubmed_mcp_registered(app_state) -> bool:
     """
@@ -43,47 +30,20 @@ def ensure_pubmed_mcp_registered(app_state) -> bool:
         app_state: The application state object containing config
 
     Returns:
-        True if MCP is now available, False if there was an error
+        True if the tool is available (recém-registrado ou já existente),
+        False se houve erro no registro.
     """
-    try:
-        # Get current tool server connections
-        if not hasattr(app_state, 'config'):
-            logger.warning("[Medical] app_state doesn't have config attribute")
-            return False
-
-        # app_state.config may be a settings object without .get
-        config_obj = app_state.config
-        try:
-            current_connections = config_obj.get("TOOL_SERVER_CONNECTIONS", [])
-        except Exception:
-            current_connections = getattr(config_obj, "TOOL_SERVER_CONNECTIONS", [])
-
-        if not isinstance(current_connections, list):
-            current_connections = []
-
-        # Check if PubMed MCP is already configured
-        pubmed_exists = any(
-            conn.get("info", {}).get("id") == PUBMED_MCP_ID
-            for conn in current_connections
-        )
-
-        if not pubmed_exists:
-            logger.info("[Medical] 🔧 Registering PubMed MCP server for medical query...")
-            pubmed_config = get_pubmed_mcp_config()
-
-            # Add PubMed MCP to connections
-            current_connections.append(pubmed_config)
-            app_state.config["TOOL_SERVER_CONNECTIONS"] = current_connections
-
-            logger.info(f"[Medical] ✅ PubMed MCP server successfully registered (ID: {PUBMED_MCP_ID})")
-            return True
-        else:
-            logger.debug(f"[Medical] PubMed MCP server already registered")
-            return True
-
-    except Exception as e:
-        logger.error(f"[Medical] ✗ Failed to register PubMed MCP: {e}", exc_info=True)
+    if not hasattr(app_state, 'config'):
+        logger.warning("[Medical] app_state doesn't have config attribute")
         return False
+
+    conns = list(getattr(app_state.config, "TOOL_SERVER_CONNECTIONS", []) or [])
+    ja_existe = any(
+        (conn.get("info", {}) or {}).get("id") == PUBMED_MCP_ID
+        for conn in conns
+    )
+
+    return registrar_pubmed_mcp(app_state) or ja_existe
 
 def auto_select_medical_tools(form_data: Dict[str, Any], app_state) -> Dict[str, Any]:
     """
