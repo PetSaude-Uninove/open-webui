@@ -416,10 +416,10 @@ const setToolServers = async () => {
 		<div class="flex flex-col items-center gap-2">
 			<div class="flex flex-wrap items-center justify-center gap-4">
 				<a href="https://www.uninove.br" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2">
-					<img src="https://www.uninove.br/logo-uninove.svg" alt="Uninove" class="h-6 object-contain" />
+					<img src="/static/parceiros/uninove.svg" alt="Uninove" class="h-6 object-contain" />
 				</a>
-				<a href="https://askklog.com.br" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2">
-					<img src="https://askklog.com.br/wp-content/themes/asklog-site/source/img/logo-asklog.svg" alt="AskKlog" class="h-6 object-contain" />
+				<a href="https://www.maua.sp.gov.br" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2">
+					<img src="/static/parceiros/maua.png" alt="Prefeitura de Mauá" class="h-6 object-contain" />
 				</a>
 				<a href="https://www.gov.br/saude/pt-br/composicao/sgtes/pet-saude" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2">
 					<img src="https://www.gov.br/saude/pt-br/composicao/sgtes/pet-saude/chamamento-publico-no-01-2025-2013-secretaria-de-informacao-e-saude-digital-seidigi/@@images/image" alt="PET Saúde" class="h-6 object-contain rounded" />
@@ -431,7 +431,7 @@ const setToolServers = async () => {
 				target="_blank"
 				rel="noreferrer"
 			>
-				Supported by AskKlog.
+				powered by AskKlog
 			</a>
 		</div>
 	</footer>

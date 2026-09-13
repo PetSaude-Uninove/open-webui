@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Tema AskKlog - identidade visual (preto, azul #41a5ee, branco)
+   Fontes: Jost (titulos/marca) e Source Sans 3 (corpo), com fallback de sistema.
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Source+Sans+3:wght@400;600&display=swap');
+
+:root {
+	--font-brand:
+		'Jost', ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--font-body:
+		'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--askklog-blue: #41a5ee;
+	/* Azul derivado do azul de marca, mais escuro, para links pequenos em
+	   fundo branco continuarem legiveis (contraste AA). */
+	--askklog-blue-link: #1f7fc9;
+}
+
+body {
+	font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: var(--font-brand);
+}
+
+/* --------------------------------------------------------------------
+   Links de texto
+   -------------------------------------------------------------------- */
+a {
+	color: var(--askklog-blue-link);
+}
+
+html.dark a {
+	color: var(--askklog-blue);
+}
+
+/* --------------------------------------------------------------------
+   Botoes primarios (enviar, continuar, etc.) e botao de OAuth
+   -------------------------------------------------------------------- */
+button[type='submit'],
+.bg-black,
+html.dark .dark\:bg-white {
+	background-color: var(--askklog-blue) !important;
+	border-color: var(--askklog-blue) !important;
+	color: #ffffff !important;
+}
+
+button[type='submit']:hover,
+.bg-black:hover,
+html.dark .dark\:bg-white:hover {
+	background-color: var(--askklog-blue-link) !important;
+}
+
+/* Botao "Continue with" (OAuth) e demais botoes secundarios da tela de login */
+#auth-page .bg-gray-700\/5 {
+	border: 1px solid var(--askklog-blue);
+}
+
+#auth-page .bg-gray-700\/5:hover {
+	border-color: var(--askklog-blue-link);
+}
+
+/* --------------------------------------------------------------------
+   Foco de campos (acessibilidade)
+   -------------------------------------------------------------------- */
+input:focus,
+textarea:focus,
+select:focus,
+button:focus-visible {
+	outline-color: var(--askklog-blue) !important;
+	box-shadow: 0 0 0 2px var(--askklog-blue) !important;
+}
+
+/* --------------------------------------------------------------------
+   Item ativo/selecionado na barra lateral (chat aberto)
+   O componente ChatItem.svelte adiciona a classe literal "selected"
+   ao item ativo, alem das classes de fundo cinza padrao.
+   -------------------------------------------------------------------- */
+#sidebar-chat-item.selected {
+	background-color: rgba(65, 165, 238, 0.16) !important;
+}
+
+html.dark #sidebar-chat-item.selected {
+	background-color: rgba(65, 165, 238, 0.22) !important;
+}
