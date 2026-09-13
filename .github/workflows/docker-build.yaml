@@ -16,7 +16,26 @@ env:
   IMAGE: ghcr.io/petsaude-uninove/open-webui
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependencias minimas para os testes de texto do backend
+        run: pip install pytest pydantic typer uvicorn typing_extensions
+      - name: Rodar testes do backend (tema AskKlog, status de conhecimento, PubMed MCP)
+        run: |
+          cd backend
+          python -m pytest -q \
+            open_webui/test/test_webui_name.py \
+            open_webui/test/test_status_conhecimento.py \
+            open_webui/test/test_pubmed_setup.py
+
   build:
+    needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:

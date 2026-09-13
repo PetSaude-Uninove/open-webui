@@ -229,7 +229,7 @@
 									<img
 										id="logo"
 										crossorigin="anonymous"
-										src="{WEBUI_BASE_URL}/static/favicon.png"
+										src="{WEBUI_BASE_URL}/static/logo.png"
 										class="size-24 rounded-full"
 										alt=""
 									/>
@@ -414,10 +414,15 @@
 
 									<hr class="w-32 h-px my-4 border-0 dark:bg-gray-100/10 bg-gray-700/10" />
 								</div>
+								<div class="mb-3 text-xs text-gray-500 dark:text-gray-400">
+									{$i18n.t(
+										'Entre com sua conta institucional para acessar o assistente clínico.'
+									)}
+								</div>
 								<div class="flex flex-col space-y-2">
 									{#if $config?.oauth?.providers?.google}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="askklog-oauth flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/google/login`;
 											}}
@@ -446,7 +451,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.microsoft}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="askklog-oauth flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/microsoft/login`;
 											}}
@@ -476,7 +481,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.github}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="askklog-oauth flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/github/login`;
 											}}
@@ -496,7 +501,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.oidc}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="askklog-oauth flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/oidc/login`;
 											}}
@@ -525,7 +530,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.feishu}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
+											class="askklog-oauth flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/feishu/login`;
 											}}
@@ -555,6 +560,60 @@
 									</button>
 								</div>
 							{/if}
+
+							<div class="mt-6 flex flex-col items-center gap-2">
+								<div class="flex flex-wrap items-center justify-center gap-4">
+									<a
+										href="https://www.uninove.br"
+										target="_blank"
+										rel="noreferrer"
+										class="inline-flex items-center"
+									>
+										<img
+											src="{WEBUI_BASE_URL}/static/parceiros/uninove.svg"
+											alt="Uninove"
+											class="max-h-10 object-contain"
+										/>
+									</a>
+									<a
+										href="https://www.maua.sp.gov.br"
+										target="_blank"
+										rel="noreferrer"
+										class="inline-flex items-center"
+									>
+										<img
+											src="{WEBUI_BASE_URL}/static/parceiros/maua.png"
+											alt="Prefeitura de Mauá"
+											class="max-h-10 object-contain"
+										/>
+									</a>
+									<a
+										href="https://askklog.com.br"
+										target="_blank"
+										rel="noreferrer"
+										class="inline-flex items-center"
+									>
+										<img
+											src="{WEBUI_BASE_URL}/static/parceiros/askklog.png"
+											alt="AskKlog"
+											class="max-h-10 object-contain"
+										/>
+									</a>
+								</div>
+								<a
+									href="https://askklog.com.br"
+									target="_blank"
+									rel="noreferrer"
+									class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:underline"
+								>
+									<span>{$i18n.t('powered by')}</span>
+									<img
+										src="{WEBUI_BASE_URL}/static/parceiros/askklog.png"
+										alt="AskKlog"
+										class="h-4 object-contain"
+									/>
+								</a>
+							</div>
 						</div>
 						{#if $config?.metadata?.login_footer}
 							<div class="max-w-3xl mx-auto">
