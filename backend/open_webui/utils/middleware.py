@@ -1082,6 +1082,28 @@ def apply_params_to_form_data(form_data, model):
     return form_data
 
 
+async def encerrar_status_conhecimento(event_emitter, user_message):
+    """Fecha o status "knowledge_search" aberto antes dos filtros de entrada.
+
+    O status é emitido assim que o modelo tem base de conhecimento, antes de o
+    `inlet` das filter functions rodar. Quando um filtro bloqueia a mensagem
+    (por exemplo, o guardrail de PII), a recuperação nunca acontece e o
+    fechamento normal do status não é emitido, e a interface fica em
+    "processando". Chamar isto antes de propagar a exceção resolve.
+    """
+    await event_emitter(
+        {
+            "type": "status",
+            "data": {
+                "action": "knowledge_search",
+                "query": user_message,
+                "done": True,
+                "hidden": True,
+            },
+        }
+    )
+
+
 async def process_chat_payload(request, form_data, user, metadata, model):
     # Pipeline Inlet -> Filter Inlet -> Chat Memory -> Chat Web Search -> Chat Image Generation
     # -> Chat Code Interpreter (Form Data Update) -> (Default) Chat Tools Function Calling
@@ -1210,6 +1232,8 @@ async def process_chat_payload(request, form_data, user, metadata, model):
             request, form_data, user, models
         )
     except Exception as e:
+        if model_knowledge:
+            await encerrar_status_conhecimento(event_emitter, user_message)
         raise e
 
     try:
@@ -1228,6 +1252,8 @@ async def process_chat_payload(request, form_data, user, metadata, model):
             extra_params=extra_params,
         )
     except Exception as e:
+        if model_knowledge:
+            await encerrar_status_conhecimento(event_emitter, user_message)
         raise Exception(f"{e}")
 
     features = form_data.pop("features", None)
