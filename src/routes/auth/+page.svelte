@@ -596,7 +596,12 @@
 										<img
 											src="{WEBUI_BASE_URL}/static/parceiros/askklog.png"
 											alt="AskKlog"
-											class="max-h-10 object-contain"
+											class="max-h-10 object-contain dark:hidden"
+										/>
+										<img
+											src="{WEBUI_BASE_URL}/static/parceiros/askklog-wordmark-dark.png"
+											alt="AskKlog"
+											class="max-h-10 object-contain hidden dark:inline"
 										/>
 									</a>
 								</div>
@@ -610,7 +615,12 @@
 									<img
 										src="{WEBUI_BASE_URL}/static/parceiros/askklog.png"
 										alt="AskKlog"
-										class="h-4 object-contain"
+										class="h-4 object-contain dark:hidden"
+									/>
+									<img
+										src="{WEBUI_BASE_URL}/static/parceiros/askklog-wordmark-dark.png"
+										alt="AskKlog"
+										class="h-4 object-contain hidden dark:inline"
 									/>
 								</a>
 							</div>
