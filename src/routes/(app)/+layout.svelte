@@ -427,11 +427,21 @@ const setToolServers = async () => {
 			</div>
 			<a
 				href="https://askklog.com.br"
-				class="hover:underline"
+				class="inline-flex items-center gap-1.5 hover:underline"
 				target="_blank"
 				rel="noreferrer"
 			>
-				powered by AskKlog
+				<span>powered by</span>
+				<img
+					src="/static/parceiros/askklog.png"
+					alt="AskKlog"
+					class="h-4 object-contain dark:hidden"
+				/>
+				<img
+					src="/static/parceiros/askklog-wordmark-dark.png"
+					alt="AskKlog"
+					class="h-4 object-contain hidden dark:inline"
+				/>
 			</a>
 		</div>
 	</footer>
