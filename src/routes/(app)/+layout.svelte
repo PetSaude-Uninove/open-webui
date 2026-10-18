@@ -15,7 +15,7 @@
 	import { getAllTags } from '$lib/apis/chats';
 	import { getPrompts } from '$lib/apis/prompts';
 	import { getTools } from '$lib/apis/tools';
-import { getBanners, getToolServerConnections } from '$lib/apis/configs';
+	import { getBanners } from '$lib/apis/configs';
 	import { getUserSettings } from '$lib/apis/users';
 
 	import { WEBUI_VERSION } from '$lib/constants';
@@ -119,35 +119,21 @@ import { getBanners, getToolServerConnections } from '$lib/apis/configs';
 		);
 	};
 
-
-const setToolServers = async () => {
-	let toolServersData = await getToolServersData($settings?.toolServers ?? []);
-	// Fallback: merge global connections when user has none
-	if ((toolServersData?.length ?? 0) === 0) {
-		try {
-			const globalConns = await getToolServerConnections(localStorage.token);
-			const servers = globalConns?.TOOL_SERVER_CONNECTIONS ?? [];
-			if (servers.length > 0) {
-				toolServersData = await getToolServersData(servers);
+	const setToolServers = async () => {
+		let toolServersData = await getToolServersData($settings?.toolServers ?? []);
+		toolServersData = toolServersData.filter((data) => {
+			if (!data || data.error) {
+				toast.error(
+					$i18n.t(`Failed to connect to {{URL}} OpenAPI tool server`, {
+						URL: data?.url
+					})
+				);
+				return false;
 			}
-		} catch (e) {
-			console.debug('No global tool servers available');
-		}
-	}
-
-	toolServersData = toolServersData.filter((data) => {
-		if (!data || data.error) {
-			toast.error(
-				$i18n.t(`Failed to connect to {{URL}} OpenAPI tool server`, {
-					URL: data?.url
-				})
-			);
-			return false;
-		}
-		return true;
-	});
-	toolServers.set(toolServersData);
-};
+			return true;
+		});
+		toolServers.set(toolServersData);
+	};
 
 	const setBanners = async () => {
 		const bannersData = await getBanners(localStorage.token);
