@@ -32,7 +32,8 @@ jobs:
           python -m pytest -q \
             open_webui/test/test_webui_name.py \
             open_webui/test/test_status_conhecimento.py \
-            open_webui/test/test_pubmed_setup.py
+            open_webui/test/test_pubmed_setup.py \
+            open_webui/test/test_layout_tool_servers.py
 
   build:
     needs: test
